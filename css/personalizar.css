@@ -1,0 +1,14 @@
+/* =====================================================================
+   ÁREA LIVRE — PERSONALIZE O LAYOUT SEM ALTERAR O CSS ORIGINAL
+   Exemplos: altere variáveis, cores de fundo, fontes e tamanhos abaixo.
+
+   :root {
+     --olive: #526b51;
+     --peach: #c36e51;
+   }
+
+   .hero h1 { font-size: 72px; }
+
+   Acrescente suas regras neste espaço.
+   ===================================================================== */
+

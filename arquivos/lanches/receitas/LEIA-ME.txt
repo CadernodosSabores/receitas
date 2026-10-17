@@ -1,0 +1,1 @@
+As receitas cadastradas em js/novas-receitas.js aparecem automaticamente na página receita.html?id=... . Você não precisa criar arquivos HTML aqui. Se desejar páginas manuais, use esta pasta.
