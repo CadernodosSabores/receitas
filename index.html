@@ -1043,7 +1043,7 @@ function home(){const all=recipes();return `<section class="hero"><div class="co
 function listing(c){group=c;return `<div class="container page-head"><div class="breadcrumbs"><a href="#inicio">Início</a> › <span>${cats[c]}</span></div><span class="eyebrow">Coleção de receitas</span><h1>${cats[c]}.</h1><p>Busque por nome ou ingrediente e filtre por calorias máximas por porção.</p></div><section class="container listing"><div class="toolbar"><label>Buscar receitas<input id="search" type="search" placeholder="Nome ou ingrediente" value="${esc(query)}"></label><label>Até quantas calorias?<input id="max-cal" type="number" min="1" step="10" placeholder="Sem limite" value="${maxRecipe||''}"></label><button class="btn btn-outline" id="reset-filters">Limpar filtros</button></div><div class="result-line" id="result-count"></div><div id="list-results" class="recipe-grid"></div></section>`}
 function drawList(){const normalized=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const all=recipes().filter(r=>r.category===group&&(!maxRecipe||Number(r.kcal)<=maxRecipe)&&normalized(r.title+' '+r.description+' '+(r.ingredients||[]).map(i=>i.name).join(' ')).includes(normalized(query)));$('list-results').innerHTML=all.length?all.map(card).join(''):'<div class="empty-state">Nenhuma receita atende a esses filtros.</div>';$('result-count').textContent=all.length+' receitas encontradas';}
 function detail(id){const r=recipes().find(r=>r.id===id);if(!r)return '<section class="container page-head"><h1>Receita não encontrada.</h1><a href="#inicio">Voltar ao início</a></section>';recipeId=id;return `<div class="container page-head"><div class="breadcrumbs"><a href="#inicio">Início</a> › <a href="#${r.category}">${cats[r.category]}</a> › ${esc(r.title)}</div><div class="recipe-detail-layout"><div class="detail-photo">${photo(r)}</div><div><span class="eyebrow">${cats[r.category]}</span><h1>${esc(r.title)}</h1><p>${esc(r.description)}</p><div class="chips"><span class="chip">≈ ${fmt(r.kcal)} kcal por porção</span><span class="chip">${r.servings||1} porções</span></div><div class="recipe-actions"><button class="btn btn-primary" id="quick-plan">Adicionar ao cardápio</button>${r.local?'<button class="btn btn-outline" id="delete-recipe">Excluir receita local</button>':''}</div></div></div><div class="recipe-content"><section class="panel"><h2>Ingredientes</h2><ul class="ingredients-list">${(r.ingredients||[]).map(i=>`<li class="ingredient"><span>${esc(i.name)}</span><strong>${fmt(i.amount)} ${esc(i.unit)}</strong></li>`).join('')}</ul></section><section class="panel"><h2>Modo de preparo</h2><ol class="instructions">${(r.steps||[]).map((s,i)=>`<li><span class="step-number">${String(i+1).padStart(2,'0')}</span><p>${esc(s)}</p></li>`).join('')}</ol><h3>Para servir</h3><p>${esc(r.serve||'')}</p><p class="small muted">Geladeira: ${esc(r.fridge||'Não informado')} · Congelador: ${esc(r.freezer||'Não informado')}</p></section></div></div>`}
-function planner(){return `<div class="container page-head"><div class="breadcrumbs"><a href="#inicio">Início</a> › Meu cardápio</div><span class="eyebrow">Seu planejamento</span><h1>Meu cardápio.</h1><p>Organize seu dia ou sua semana. Escolha uma receita para cada refeição e acompanhe o total de kcal.</p><div class="planner-toolbar"><label>Visualização<select id="plan-type"><option value="semana" ${type==='semana'?'selected':''}>Semana inteira</option><option value="dia" ${type==='dia'?'selected':''}>Um dia</option></select></label><label id="day-label" ${type!=='dia'?'hidden':''}>Escolher dia<select id="plan-day">${days.map((d,i)=>`<option value="${i}" ${day===i?'selected':''}>${d}</option>`).join('')}</select></label><label>Limite diário (kcal)<input id="day-max" type="number" min="1" step="50" value="${dailyLimit}"></label><label>Máximo por receita (kcal)<input id="recipe-cap" type="number" min="1" step="10" placeholder="Todas" value="${maxRecipe||''}"></label><button id="clear-plan" class="btn btn-outline">Limpar cardápio</button></div><div id="day-navigation" class="day-navigation" hidden><button id="previous-day" type="button">← Dia anterior</button><span id="current-day-name"></span><button id="next-day" type="button">Próximo dia →</button></div><div id="calendar" class="planner-grid"></div><section class="plan-transfer" aria-labelledby="plan-transfer-heading"><div class="plan-transfer-head"><div><span class="eyebrow">Compartilhe entre dispositivos</span><h2 id="plan-transfer-heading">Salvar e levar seu cardápio</h2><p>Exporte um TXT no computador, envie para o celular e importe no mesmo site. Você também pode criar um PDF com o planejamento e o preparo de cada receita.</p></div></div><div class="plan-transfer-actions"><button id="export-plan-txt" class="btn btn-primary" type="button">↓ Baixar cardápio (.txt)</button><button id="import-plan-btn" class="btn btn-outline" type="button">↑ Importar cardápio (.txt)</button><input id="import-plan-file" type="file" accept=".txt,text/plain,.json,application/json" hidden aria-label="Selecionar arquivo de cardápio"><button id="export-week-pdf" class="btn btn-outline" type="button">↗ PDF da semana</button><button id="export-day-pdf" class="btn btn-outline" type="button" ${type==='dia'?'':'hidden'}>↗ PDF deste dia</button></div><p class="plan-transfer-note">O TXT guarda as refeições, o limite de calorias e as receitas criadas por você que estiverem no cardápio. Ao importar, o novo cardápio substitui o planejamento salvo neste navegador, após confirmação. Para criar o PDF, escolha “Salvar como PDF” na janela de impressão.</p><p id="plan-transfer-status" class="plan-transfer-status" role="status" aria-live="polite"></p></section><p class="tiny muted" style="margin-top:20px">Valores estimados de kcal por porção; variam conforme marca, corte, quantidade e preparo. As imagens das receitas são ilustrativas. O cardápio fica salvo apenas neste navegador.</p></div>`}
+function planner(){return `<div class="container page-head"><div class="breadcrumbs"><a href="#inicio">Início</a> › Meu cardápio</div><span class="eyebrow">Seu planejamento</span><h1>Meu cardápio.</h1><p>Organize seu dia ou sua semana. Escolha uma receita para cada refeição e acompanhe o total de kcal.</p><div class="planner-toolbar"><label>Visualização<select id="plan-type"><option value="semana" ${type==='semana'?'selected':''}>Semana inteira</option><option value="dia" ${type==='dia'?'selected':''}>Um dia</option></select></label><label id="day-label" ${type!=='dia'?'hidden':''}>Escolher dia<select id="plan-day">${days.map((d,i)=>`<option value="${i}" ${day===i?'selected':''}>${d}</option>`).join('')}</select></label><label>Limite diário (kcal)<input id="day-max" type="number" min="1" step="50" value="${dailyLimit}"></label><label>Máximo por receita (kcal)<input id="recipe-cap" type="number" min="1" step="10" placeholder="Todas" value="${maxRecipe||''}"></label><button id="clear-plan" class="btn btn-outline">Limpar cardápio</button></div><div id="day-navigation" class="day-navigation" hidden><button id="previous-day" type="button">← Dia anterior</button><span id="current-day-name"></span><button id="next-day" type="button">Próximo dia →</button></div><div id="calendar" class="planner-grid"></div><section class="plan-transfer" aria-labelledby="plan-transfer-heading"><div class="plan-transfer-head"><div><span class="eyebrow">Compartilhe entre dispositivos</span><h2 id="plan-transfer-heading">Salvar e levar seu cardápio</h2><p>Exporte um TXT no computador, envie para o celular e importe no mesmo site. Você também pode criar um PDF com o planejamento, o preparo de cada receita e uma lista de compras com todos os ingredientes da semana.</p></div></div><div class="plan-transfer-actions"><button id="export-plan-txt" class="btn btn-primary" type="button">↓ Baixar cardápio (.txt)</button><button id="import-plan-btn" class="btn btn-outline" type="button">↑ Importar cardápio (.txt)</button><input id="import-plan-file" type="file" accept=".txt,text/plain,.json,application/json" hidden aria-label="Selecionar arquivo de cardápio"><button id="export-week-pdf" class="btn btn-outline" type="button">↗ PDF da semana</button><button id="export-day-pdf" class="btn btn-outline" type="button" ${type==='dia'?'':'hidden'}>↗ PDF deste dia</button></div><p class="plan-transfer-note">O TXT guarda as refeições, o limite de calorias e as receitas criadas por você que estiverem no cardápio. Ao importar, o novo cardápio substitui o planejamento salvo neste navegador, após confirmação. Para criar o PDF, escolha “Salvar como PDF” na janela de impressão.</p><p id="plan-transfer-status" class="plan-transfer-status" role="status" aria-live="polite"></p></section><p class="tiny muted" style="margin-top:20px">Valores estimados de kcal por porção; variam conforme marca, corte, quantidade e preparo. As imagens das receitas são ilustrativas. O cardápio fica salvo apenas neste navegador.</p></div>`}
 
 /*
  * Cardápio portátil — TXT com leitura humana + seção JSON com versão de formato.
@@ -1183,6 +1183,47 @@ function formatIngredientForPlan(i,r){
   const n=Number(r.servings)||1;
   return (Number.isFinite(amount)?fmt(amount/n)+' '+String(i.unit||'')+' · ':'')+String(i.name||'');
 }
+// Consolida as quantidades usadas no cardápio, contando cada ocorrência da receita.
+// A mesma regra de 1 porção utilizada nos detalhes do PDF é aplicada aqui.
+function consolidatedPlanIngredients(records){
+  const result=new Map();
+  const collator=new Intl.Collator('pt-BR',{sensitivity:'base'});
+  for(const {items} of records)for(const {recipe:r} of items){
+    if(!r||!Array.isArray(r.ingredients))continue;
+    const servings=Number(r.servings)>0?Number(r.servings):1;
+    for(const i of r.ingredients){
+      if(!i||typeof i!=='object')continue;
+      const name=String(i.name||'').trim().replace(/\s+/g,' ');
+      if(!name)continue;
+      const originalUnit=String(i.unit||'').trim().replace(/\s+/g,' ');
+      const unitKey=originalUnit.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      let unit=originalUnit;
+      let multiplier=1;
+      if(unitKey==='kg'||unitKey==='quilo'||unitKey==='quilos'){unit='g';multiplier=1000;}
+      else if(unitKey==='g'||unitKey==='grama'||unitKey==='gramas'){unit='g';}
+      else if(unitKey==='l'||unitKey==='litro'||unitKey==='litros'){unit='mL';multiplier=1000;}
+      else if(unitKey==='ml'||unitKey==='mililitro'||unitKey==='mililitros'){unit='mL';}
+      else if(['un','un.','und','unidade','unidades'].includes(unitKey)){unit='un';}
+      const nameKey=name.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      const key=JSON.stringify([nameKey,unit.toLocaleLowerCase('pt-BR')]);
+      if(!result.has(key))result.set(key,{name,unit,amount:0,hasQuantity:false,withoutQuantity:false});
+      const entry=result.get(key);
+      const raw=i.amount;
+      const amount=raw===null||raw===undefined||String(raw).trim()===''?NaN:Number(raw);
+      if(Number.isFinite(amount)&&amount>=0){entry.amount+=amount*multiplier/servings;entry.hasQuantity=true;}
+      else entry.withoutQuantity=true;
+    }
+  }
+  return [...result.values()].sort((a,b)=>collator.compare(a.name,b.name)||collator.compare(a.unit,b.unit));
+}
+function formatWeeklyQuantity(item){
+  const format=n=>n.toLocaleString('pt-BR',{maximumFractionDigits:2});
+  if(!item.hasQuantity)return 'a gosto';
+  const amount=item.amount;
+  const large=item.unit==='g'||item.unit==='mL';
+  const quantity=large&&amount>=1000?format(amount/1000)+' '+(item.unit==='g'?'kg':'L'):format(amount)+(item.unit?' '+item.unit:'');
+  return item.withoutQuantity?quantity+' + a gosto':quantity;
+}
 function pdfPlanDocument(onlyDay){
   const scheduled=typeof onlyDay==='number'?[onlyDay]:days.map((_,i)=>i);
   const byId=new Map(recipes().map(r=>[r.id,r]));
@@ -1192,6 +1233,8 @@ function pdfPlanDocument(onlyDay){
   });
   const totalSelected=records.reduce((sum,d)=>sum+d.items.filter(x=>x.recipe).length,0);
   if(!totalSelected){alert('Adicione pelo menos uma receita ao cardápio antes de gerar o PDF.');return null;}
+  const summaryIngredients=typeof onlyDay==='number'?[]:consolidatedPlanIngredients(records);
+  const ingredientSummary=typeof onlyDay==='number'?'':`<section class="shopping-summary-page"><header class="shopping-heading"><div class="eyebrow">Lista de compras</div><h2>Ingredientes da semana</h2><p>${totalSelected} refeição(ões) planejada(s) · ${summaryIngredients.length} ingrediente(s) diferente(s)</p></header><p class="shopping-intro">Quantidades totais para as refeições selecionadas, considerando <strong>1 porção por refeição</strong>. Receitas repetidas são contabilizadas novamente. Marque os ingredientes à medida que organizar suas compras.</p>${summaryIngredients.length?`<table class="shopping-table"><thead><tr><th class="check-col"></th><th>Ingrediente</th><th class="amount-col">Quantidade total</th></tr></thead><tbody>${summaryIngredients.map(i=>`<tr><td><span class="shopping-check"></span></td><td>${esc(i.name)}</td><td class="ingredient-total">${esc(formatWeeklyQuantity(i))}</td></tr>`).join('')}</tbody></table>`:'<p>Nenhum ingrediente informado nas receitas selecionadas.</p>'}<p class="shopping-note">As quantidades seguem as unidades e as condições indicadas nas receitas (por exemplo, arroz já cozido). Ingredientes só são somados quando têm o mesmo nome e unidades compatíveis. Confira as embalagens e os rendimentos antes de comprar.</p></section>`;
   const table=records.map(({d,items,total})=>`<tr><th>${esc(days[d])}</th>${items.map(x=>`<td>${x.recipe?esc(x.recipe.title):'—'}</td>`).join('')}<td>${fmt(total)} kcal</td></tr>`).join('');
   const pages=records.map(({d,items,total})=>`<section class="day-page"><header class="day-heading"><div class="eyebrow">Planejamento de refeições</div><h2>${esc(days[d])}</h2><p>${fmt(total)} kcal estimadas · limite diário ${fmt(dailyLimit)} kcal</p></header>${items.map(({cat,recipe:r})=>{
     if(!r)return `<article class="no-meal"><h3>${esc(cats[cat])}</h3><p>Sem receita planejada.</p></article>`;
@@ -1215,6 +1258,21 @@ function pdfPlanDocument(onlyDay){
   .summary-table thead th{background:#e8eee5;text-align:left;color:#36513a}
   .summary-table th:first-child{width:15%}.summary-table th:last-child{width:11%}
   .disclaimer{font-size:9pt;color:#737a70;margin-top:12mm}
+  .shopping-summary-page{break-before:page;page-break-before:always}
+  .shopping-heading{padding:6mm 0 4mm;border-bottom:2px solid #526b51;margin-bottom:5mm}
+  .shopping-heading h2{margin:2mm 0}.shopping-heading p{margin:0;color:#667569}
+  .shopping-intro{color:#485a4c;font-size:9.5pt;margin:0 0 6mm}
+  .shopping-table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  .shopping-table thead{display:table-header-group}
+  .shopping-table th{background:#e8eee5;color:#36513a;text-align:left;padding:9px 10px}
+  .shopping-table td{border-bottom:1px solid #e1e7de;padding:8px 10px;vertical-align:middle;break-inside:avoid}
+  .shopping-table tbody tr{break-inside:avoid;page-break-inside:avoid}
+  .shopping-table tbody tr:nth-child(even){background:#f8faf6}
+  .shopping-table .check-col{width:32px}
+  .shopping-table .amount-col{width:29%;text-align:right}
+  .shopping-table .ingredient-total{text-align:right;font-weight:bold;white-space:nowrap;color:#334d38}
+  .shopping-check{display:inline-block;width:13px;height:13px;border:1px solid #789278;border-radius:3px}
+  .shopping-note{font-size:8pt;color:#6f796d;margin-top:7mm}
   .day-page{break-before:page;page-break-before:always}
   .day-heading{padding:6mm 0;border-bottom:2px solid #526b51;margin-bottom:7mm}
   .day-heading h2{margin-top:2mm}.day-heading p{color:#667569;margin:1mm 0 0}
@@ -1234,7 +1292,7 @@ function pdfPlanDocument(onlyDay){
   @media screen{body{max-width:860px;margin:20px auto;background:#f7f8f4;padding:20px}.cover,.day-page{padding:25px;background:white;margin:20px 0;box-shadow:0 0 10px #0002}}
   `;
   const heading=typeof onlyDay==='number'?'Cardápio de '+days[onlyDay]:'Meu cardápio da semana';
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(heading)} — Caderno dos Sabores</title><style>${style}</style></head><body><div class="print-ui"><span>Seu relatório está pronto. Na impressão, selecione “Salvar como PDF”.</span><button type="button" onclick="window.print()">Imprimir / Salvar PDF</button></div><section class="cover"><p class="brand">✳ Caderno dos Sabores</p><h1>${esc(heading)}</h1><p class="subtitle">Planejamento de refeições e receitas para preparar em casa</p><table class="summary-table"><thead><tr><th>Dia</th>${meals.map(cat=>`<th>${esc(cats[cat])}</th>`).join('')}<th>Total</th></tr></thead><tbody>${table}</tbody></table><p class="disclaimer">Valores calóricos aproximados por porção. Ingredientes de receitas com rendimento múltiplo foram divididos pelo número de porções da receita original. Confira temperaturas de cozimento e medidas antes de preparar.</p></section>${pages}</body></html>`;
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(heading)} — Caderno dos Sabores</title><style>${style}</style></head><body><div class="print-ui"><span>Seu relatório está pronto. Na impressão, selecione “Salvar como PDF”.</span><button type="button" onclick="window.print()">Imprimir / Salvar PDF</button></div><section class="cover"><p class="brand">✳ Caderno dos Sabores</p><h1>${esc(heading)}</h1><p class="subtitle">Planejamento de refeições e receitas para preparar em casa</p><table class="summary-table"><thead><tr><th>Dia</th>${meals.map(cat=>`<th>${esc(cats[cat])}</th>`).join('')}<th>Total</th></tr></thead><tbody>${table}</tbody></table><p class="disclaimer">Valores calóricos aproximados por porção. Ingredientes de receitas com rendimento múltiplo foram divididos pelo número de porções da receita original. Confira temperaturas de cozimento e medidas antes de preparar.</p></section>${ingredientSummary}${pages}</body></html>`;
 }
 function printMenuPdf(onlyDay){
   const html=pdfPlanDocument(onlyDay);
